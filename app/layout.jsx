@@ -35,7 +35,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="es" className={`${playfair.variable} ${inter.variable}`}>
-      <body>
+      <body style={{ "--glass-filter": "url(#glass-distortion)" }}>
         <Gate>
           <GlassFilter />
           <div className="relative min-h-screen w-full flex flex-col">

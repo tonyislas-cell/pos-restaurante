@@ -12,21 +12,20 @@ export const GlassEffect = ({
   onClick,
 }) => {
   const glassStyle = {
-    boxShadow: "0 6px 6px rgba(0, 0, 0, 0.05), 0 0 20px rgba(0, 0, 0, 0.03)", // Lightened shadow for cream theme
+    boxShadow: "0 6px 6px rgba(0, 0, 0, 0.05), 0 0 20px rgba(0, 0, 0, 0.03)",
     transitionTimingFunction: "cubic-bezier(0.175, 0.885, 0.32, 2.2)",
     ...style,
   };
 
-  // Adjust background color to match the light premium theme, making it more visible
   const content = (
     <div
-      className={`relative flex flex-col overflow-hidden text-ink cursor-pointer transition-all duration-700 rounded-3xl ${className}`}
+      className={`relative overflow-hidden transition-all duration-700 rounded-3xl ${className}`}
       style={glassStyle}
       onClick={onClick}
     >
       {/* Glass Layers */}
       <div
-        className="absolute inset-0 z-0 overflow-hidden rounded-inherit rounded-3xl"
+        className="absolute inset-0 z-0 overflow-hidden rounded-inherit rounded-3xl pointer-events-none"
         style={{
           backdropFilter: "blur(5px)",
           filter: "url(#glass-distortion)",
@@ -34,8 +33,8 @@ export const GlassEffect = ({
         }}
       />
       <div
-        className="absolute inset-0 z-10 rounded-inherit"
-        style={{ background: "rgba(255, 255, 255, 0.6)" }} // Increased opacity for better readability on light mode
+        className="absolute inset-0 z-10 rounded-inherit pointer-events-none"
+        style={{ background: "rgba(255, 255, 255, 0.6)" }}
       />
       <div
         className="absolute inset-0 z-20 rounded-inherit rounded-3xl overflow-hidden pointer-events-none"
@@ -46,12 +45,11 @@ export const GlassEffect = ({
       />
 
       {/* Content */}
-      <div className="relative z-30 flex-1 flex flex-col">{children}</div>
+      <div className="relative z-30 h-full">{children}</div>
     </div>
   );
 
   if (href) {
-    // If it's internal Next.js link
     if (href.startsWith("/")) {
       return (
         <Link href={href} className="block w-full h-full">
@@ -59,7 +57,6 @@ export const GlassEffect = ({
         </Link>
       );
     }
-    // External link
     return (
       <a href={href} target={target} rel="noopener noreferrer" className="block w-full h-full">
         {content}
@@ -71,7 +68,7 @@ export const GlassEffect = ({
 };
 
 export const GlassFilter = () => (
-  <svg style={{ display: "none" }}>
+  <svg style={{ position: "absolute", width: 0, height: 0, pointerEvents: "none" }} aria-hidden="true">
     <filter
       id="glass-distortion"
       x="0%"
