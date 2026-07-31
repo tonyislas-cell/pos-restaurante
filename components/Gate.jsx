@@ -12,7 +12,7 @@ export default function Gate({ children }) {
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
 
-  const expected = process.env.NEXT_PUBLIC_POS_PASSWORD;
+  const expected = process.env.NEXT_PUBLIC_POS_PASSWORD || "tejaban2002";
 
   useEffect(() => {
     // Si no hay contraseña configurada, dejamos pasar (modo desarrollo).
