@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { KeyRound } from "lucide-react";
+import { GlassEffect } from "@/components/ui/glass";
 
 // Puerta de acceso muy simple para el MVP: una contraseña compartida del local.
 // NO es seguridad real (es solo del lado del cliente), pero evita que cualquiera
@@ -36,8 +37,9 @@ export default function Gate({ children }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
-      <form onSubmit={submit} className="card p-8 w-full max-w-sm space-y-5">
-        <div className="flex flex-col items-center gap-3">
+      <GlassEffect className="w-full max-w-sm">
+        <form onSubmit={submit} className="p-8 space-y-5">
+          <div className="flex flex-col items-center gap-3">
           <span className="w-12 h-12 rounded-full bg-brand/15 flex items-center justify-center">
             <KeyRound size={22} strokeWidth={1.75} className="text-brand-dark" />
           </span>
@@ -60,10 +62,11 @@ export default function Gate({ children }) {
           placeholder="Contraseña"
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <button className="btn-primary w-full" type="submit">
-          Entrar
-        </button>
-      </form>
+          <button type="submit" className="btn-primary w-full">
+            Entrar
+          </button>
+        </form>
+      </GlassEffect>
     </div>
   );
 }

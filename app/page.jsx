@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { money } from "@/lib/format";
 import { Armchair, UtensilsCrossed, BarChart3 } from "lucide-react";
+import { GlassEffect } from "@/components/ui/glass";
 
 export default function Home() {
   const [openCount, setOpenCount] = useState(null);
@@ -57,21 +58,21 @@ export default function Home() {
 
 function Stat({ label, value }) {
   return (
-    <div className="card p-5 flex-1">
+    <GlassEffect className="p-5 flex-1 flex flex-col justify-center">
       <p className="text-sm text-muted">{label}</p>
       <p className="text-3xl font-bold mt-1 tabular-nums">{value}</p>
-    </div>
+    </GlassEffect>
   );
 }
 
 function Tile({ href, icon: Icon, title, desc }) {
   return (
-    <Link href={href} className="card p-6 hover:shadow-md transition-shadow block">
+    <GlassEffect href={href} className="p-6 hover:shadow-md transition-shadow">
       <span className="inline-flex w-11 h-11 rounded-xl bg-accent/15 items-center justify-center">
         <Icon size={22} strokeWidth={1.75} className="text-accent-dark" />
       </span>
       <h2 className="font-display font-semibold text-lg mt-3">{title}</h2>
       <p className="text-sm text-muted">{desc}</p>
-    </Link>
+    </GlassEffect>
   );
 }

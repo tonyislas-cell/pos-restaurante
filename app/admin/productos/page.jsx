@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { money, generateBarcode } from "@/lib/format";
+import { GlassEffect } from "@/components/ui/glass";
 import { uploadProductImage } from "@/lib/storage";
 import { X, UtensilsCrossed } from "lucide-react";
 
@@ -122,133 +123,135 @@ export default function ProductosPage() {
       <h1 className="font-display font-semibold text-2xl tracking-tight">Artículos</h1>
 
       {/* Formulario alta/edición */}
-      <form onSubmit={saveProduct} className="card p-5 space-y-4">
-        <h2 className="font-semibold">
-          {editingId ? "Editar artículo" : "Nuevo artículo"}
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <label className="block">
-            <span className="text-sm text-muted">Nombre</span>
-            <input
-              className="input mt-1"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Ej. Hamburguesa"
-            />
-          </label>
-          <label className="block">
-            <span className="text-sm text-muted">Precio</span>
-            <input
-              className="input mt-1"
-              type="number"
-              step="0.01"
-              min="0"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
-              placeholder="0.00"
-            />
-          </label>
-          <label className="block">
-            <span className="text-sm text-muted">Tipo / categoría</span>
-            <select
-              className="input mt-1"
-              value={form.category_id}
-              onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-            >
-              <option value="">Sin categoría</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="text-sm text-muted">Código de barras</span>
-            <div className="flex gap-2 mt-1">
+      <GlassEffect className="p-5">
+        <form onSubmit={saveProduct} className="space-y-4">
+          <h2 className="font-semibold">
+            {editingId ? "Editar artículo" : "Nuevo artículo"}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label className="block">
+              <span className="text-sm text-muted">Nombre</span>
               <input
-                className="input"
-                value={form.barcode}
-                onChange={(e) => setForm({ ...form, barcode: e.target.value })}
-                placeholder="Escanea o genera uno"
+                className="input mt-1"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="Ej. Hamburguesa"
               />
-              <button
-                type="button"
-                className="btn-ghost whitespace-nowrap"
-                onClick={() => setForm({ ...form, barcode: generateBarcode() })}
+            </label>
+            <label className="block">
+              <span className="text-sm text-muted">Precio</span>
+              <input
+                className="input mt-1"
+                type="number"
+                step="0.01"
+                min="0"
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+                placeholder="0.00"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm text-muted">Tipo / categoría</span>
+              <select
+                className="input mt-1"
+                value={form.category_id}
+                onChange={(e) => setForm({ ...form, category_id: e.target.value })}
               >
-                Generar
-              </button>
-            </div>
-          </label>
-        </div>
-
-        {/* Imagen de referencia */}
-        <div>
-          <span className="text-sm text-muted">Imagen de referencia</span>
-          <div className="mt-1 flex items-center gap-3">
-            <div className="w-20 h-20 rounded-xl border border-line/30 bg-canvas overflow-hidden flex items-center justify-center shrink-0">
-              {form.image_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={form.image_url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <UtensilsCrossed size={24} strokeWidth={1.5} className="text-muted" />
-              )}
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="btn-ghost cursor-pointer !py-2">
-                {uploading ? "Subiendo…" : form.image_url ? "Cambiar foto" : "Subir foto"}
+                <option value="">Sin categoría</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className="text-sm text-muted">Código de barras</span>
+              <div className="flex gap-2 mt-1">
                 <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  disabled={uploading}
-                  onChange={onPickImage}
+                  className="input"
+                  value={form.barcode}
+                  onChange={(e) => setForm({ ...form, barcode: e.target.value })}
+                  placeholder="Escanea o genera uno"
                 />
-              </label>
-              {form.image_url && (
                 <button
                   type="button"
-                  className="text-red-600 text-sm text-left"
-                  onClick={() => setForm({ ...form, image_url: "" })}
+                  className="btn-ghost whitespace-nowrap"
+                  onClick={() => setForm({ ...form, barcode: generateBarcode() })}
                 >
-                  Quitar imagen
+                  Generar
                 </button>
-              )}
+              </div>
+            </label>
+          </div>
+
+          {/* Imagen de referencia */}
+          <div>
+            <span className="text-sm text-muted">Imagen de referencia</span>
+            <div className="mt-1 flex items-center gap-3">
+              <div className="w-20 h-20 rounded-xl border border-line/30 bg-canvas overflow-hidden flex items-center justify-center shrink-0">
+                {form.image_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={form.image_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <UtensilsCrossed size={24} strokeWidth={1.5} className="text-muted" />
+                )}
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="btn-ghost cursor-pointer !py-2">
+                  {uploading ? "Subiendo…" : form.image_url ? "Cambiar foto" : "Subir foto"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={onPickImage}
+                  />
+                </label>
+                {form.image_url && (
+                  <button
+                    type="button"
+                    className="text-red-600 text-sm text-left"
+                    onClick={() => setForm({ ...form, image_url: "" })}
+                  >
+                    Quitar imagen
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={form.active}
-            onChange={(e) => setForm({ ...form, active: e.target.checked })}
-          />
-          <span className="text-sm">Activo (se puede vender)</span>
-        </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={form.active}
+              onChange={(e) => setForm({ ...form, active: e.target.checked })}
+            />
+            <span className="text-sm">Activo (se puede vender)</span>
+          </label>
 
-        <div className="flex gap-2">
-          <button className="btn-primary" type="submit">
-            {editingId ? "Guardar cambios" : "Añadir artículo"}
-          </button>
-          {editingId && (
-            <button
-              type="button"
-              className="btn-ghost"
-              onClick={() => {
-                setEditingId(null);
-                setForm(EMPTY);
-              }}
-            >
-              Cancelar
+          <div className="flex gap-2">
+            <button className="btn-primary" type="submit">
+              {editingId ? "Guardar cambios" : "Añadir artículo"}
             </button>
-          )}
-        </div>
-      </form>
+            {editingId && (
+              <button
+                type="button"
+                className="btn-ghost"
+                onClick={() => {
+                  setEditingId(null);
+                  setForm(EMPTY);
+                }}
+              >
+                Cancelar
+              </button>
+            )}
+          </div>
+        </form>
+      </GlassEffect>
 
       {/* Gestión de categorías */}
-      <div className="card p-5 space-y-3">
+      <GlassEffect className="p-5 space-y-3">
         <h2 className="font-semibold">Categorías (tipos)</h2>
         <div className="flex flex-wrap gap-2">
           {categories.map((c) => (
@@ -281,10 +284,10 @@ export default function ProductosPage() {
             Añadir
           </button>
         </form>
-      </div>
+      </GlassEffect>
 
       {/* Lista de productos */}
-      <div className="card p-5">
+      <GlassEffect className="p-5">
         <h2 className="font-semibold mb-3">Lista de artículos ({products.length})</h2>
         {loading ? (
           <p className="text-muted">Cargando…</p>
@@ -298,44 +301,55 @@ export default function ProductosPage() {
                   <th className="py-2 w-14">Foto</th>
                   <th className="py-2">Nombre</th>
                   <th className="py-2">Tipo</th>
-                  <th className="py-2 text-right">Precio</th>
-                  <th className="py-2">Código</th>
-                  <th className="py-2"></th>
-                  <th className="py-2"></th>
+                  <th className="py-2">Precio</th>
+                  <th className="py-2 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {products.map((p) => (
-                  <tr key={p.id} className="border-b border-line/20 last:border-0">
+                  <tr key={p.id} className="border-b border-line/10 hover:bg-canvas/50">
                     <td className="py-2">
-                      <div className="w-10 h-10 rounded-lg border border-line/30 bg-canvas overflow-hidden flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg overflow-hidden bg-canvas flex items-center justify-center shrink-0 border border-line/20">
                         {p.image_url ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={p.image_url} alt="" className="w-full h-full object-cover" />
                         ) : (
-                          <UtensilsCrossed size={16} strokeWidth={1.5} className="text-muted" />
+                          <UtensilsCrossed size={16} className="text-muted" />
                         )}
                       </div>
                     </td>
-                    <td className="py-2 font-medium">
-                      {p.name}
-                      {!p.active && (
-                        <span className="ml-2 text-xs text-red-600">(inactivo)</span>
-                      )}
+                    <td className="py-2">
+                      <div className="font-medium flex items-center gap-2">
+                        {p.name}
+                        {!p.active && (
+                          <span className="bg-red-100 text-red-700 px-2 rounded-full text-xs">
+                            Inactivo
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted font-mono">{p.barcode}</div>
                     </td>
-                    <td className="py-2 text-muted">{catName(p.category_id)}</td>
-                    <td className="py-2 text-right tabular-nums">{money(p.price)}</td>
-                    <td className="py-2 text-muted font-mono text-xs">
-                      {p.barcode || "—"}
+                    <td className="py-2 text-muted">
+                      {catName(p.category_id)}
                     </td>
+                    <td className="py-2 tabular-nums">{money(p.price)}</td>
                     <td className="py-2 text-right">
-                      <button className="text-brand-dark font-semibold" onClick={() => editProduct(p)}>
+                      <button
+                        className="btn-ghost"
+                        onClick={() => {
+                          setEditingId(p.id);
+                          setForm({
+                            name: p.name,
+                            price: p.price,
+                            category_id: p.category_id || "",
+                            barcode: p.barcode || "",
+                            image_url: p.image_url || "",
+                            active: p.active,
+                          });
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                      >
                         Editar
-                      </button>
-                    </td>
-                    <td className="py-2 text-right">
-                      <button className="text-red-600" onClick={() => deleteProduct(p)}>
-                        Borrar
                       </button>
                     </td>
                   </tr>
@@ -344,7 +358,7 @@ export default function ProductosPage() {
             </table>
           </div>
         )}
-      </div>
+      </GlassEffect>
     </div>
   );
 }

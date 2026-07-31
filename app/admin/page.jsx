@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { money } from "@/lib/format";
+import { GlassEffect } from "@/components/ui/glass";
 
 // Devuelve YYYY-MM-DD en horario local
 function toKey(d) {
@@ -70,7 +71,7 @@ export default function ReportesPage() {
     <div className="space-y-5">
       <h1 className="font-display font-semibold text-2xl tracking-tight">Reportes</h1>
 
-      <div className="card p-4 flex flex-wrap items-center gap-3">
+      <GlassEffect className="p-4 flex flex-wrap items-center gap-3">
         <div className="flex gap-2">
           <button
             className={mode === "dia" ? "btn-primary" : "btn-ghost"}
@@ -91,20 +92,20 @@ export default function ReportesPage() {
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
-      </div>
+      </GlassEffect>
 
       {/* Totales del rango */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="card p-5">
+        <GlassEffect className="p-5 flex flex-col justify-center">
           <p className="text-sm text-muted">
             {mode === "dia" ? "Ventas del día" : "Ventas de la semana"}
           </p>
           <p className="text-3xl font-bold mt-1 tabular-nums">{money(total)}</p>
-        </div>
-        <div className="card p-5">
+        </GlassEffect>
+        <GlassEffect className="p-5 flex flex-col justify-center">
           <p className="text-sm text-muted">Tickets cobrados</p>
           <p className="text-3xl font-bold mt-1 tabular-nums">{ticketCount}</p>
-        </div>
+        </GlassEffect>
       </div>
 
       {loading ? (
@@ -120,7 +121,7 @@ export default function ReportesPage() {
             const dayOrders = byDay[k];
             const dayTotal = dayOrders.reduce((a, o) => a + Number(o.total), 0);
             return (
-              <div key={k} className="card p-4">
+              <GlassEffect key={k} className="p-4">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="font-display font-semibold">
                     {new Date(k + "T00:00:00").toLocaleDateString("es-MX", {
@@ -135,7 +136,7 @@ export default function ReportesPage() {
                   </span>
                 </div>
                 <ProductTable rows={aggregateProducts(dayOrders)} compact />
-              </div>
+              </GlassEffect>
             );
           })}
         </div>
@@ -160,8 +161,9 @@ function aggregateProducts(orders) {
 function ProductTable({ title, rows, compact }) {
   if (rows.length === 0)
     return <p className="text-muted text-sm">Sin productos.</p>;
+  const Wrapper = compact ? "div" : GlassEffect;
   return (
-    <div className={compact ? "" : "card p-5"}>
+    <Wrapper className={compact ? "" : "p-5"}>
       {title && <h2 className="font-semibold mb-3">{title}</h2>}
       <table className="w-full text-sm">
         <thead>
@@ -179,8 +181,8 @@ function ProductTable({ title, rows, compact }) {
               <td className="py-1 text-right tabular-nums">{money(r.amount)}</td>
             </tr>
           ))}
-        </tbody>
+          </tbody>
       </table>
-    </div>
+    </Wrapper>
   );
 }

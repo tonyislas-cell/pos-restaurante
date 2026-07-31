@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { money } from "@/lib/format";
-import { X } from "lucide-react";
+import { ArrowLeft, User, Plus, X } from "lucide-react";
+import { GlassEffect } from "@/components/ui/glass";
 
 export default function MesasPage() {
   const router = useRouter();
@@ -122,17 +123,19 @@ export default function MesasPage() {
         </div>
       )}
 
-      <form onSubmit={addTable} className="card p-4 flex gap-2 max-w-sm">
-        <input
-          className="input"
-          value={newTable}
-          onChange={(e) => setNewTable(e.target.value)}
-          placeholder="Añadir mesa (ej. Mesa 7)"
-        />
-        <button className="btn-ghost" type="submit">
-          Añadir
-        </button>
-      </form>
+      <GlassEffect className="max-w-sm">
+        <form onSubmit={addTable} className="p-4 flex gap-2 w-full">
+          <input
+            className="input"
+            value={newTable}
+            onChange={(e) => setNewTable(e.target.value)}
+            placeholder="Añadir mesa (ej. Mesa 7)"
+          />
+          <button className="btn-ghost" type="submit">
+            Añadir
+          </button>
+        </form>
+      </GlassEffect>
     </div>
   );
 }

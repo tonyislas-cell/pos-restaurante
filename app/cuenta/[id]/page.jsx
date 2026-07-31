@@ -15,6 +15,7 @@ import {
   Check,
   X as XIcon,
 } from "lucide-react";
+import { GlassEffect } from "@/components/ui/glass";
 
 export default function CuentaPage() {
   const { id } = useParams();
@@ -184,24 +185,26 @@ export default function CuentaPage() {
   if (done) {
     return (
       <div className="space-y-4">
-        <div className="no-print card p-6 text-center space-y-3">
-          <span className="inline-flex w-12 h-12 rounded-full bg-brand/15 items-center justify-center mx-auto">
-            <CheckCircle2 size={26} strokeWidth={1.75} className="text-brand-dark" />
-          </span>
-          <p className="font-display font-semibold text-xl">Cuenta cobrada</p>
-          <p className="text-muted tabular-nums">
-            {tableName} — {money(total)} ({method})
-          </p>
-          <div className="flex gap-2 justify-center">
-            <button className="btn-primary gap-2" onClick={() => window.print()}>
-              <Printer size={18} strokeWidth={1.75} />
-              Imprimir ticket
-            </button>
-            <button className="btn-ghost" onClick={() => router.push("/mesas")}>
-              Volver a mesas
-            </button>
+        <GlassEffect className="no-print p-6 space-y-3">
+          <div className="flex flex-col items-center">
+            <span className="inline-flex w-12 h-12 rounded-full bg-accent/15 items-center justify-center mx-auto mb-3">
+              <CheckCircle2 size={26} strokeWidth={1.75} className="text-accent-dark" />
+            </span>
+            <p className="font-display font-semibold text-xl text-center">Cuenta cobrada</p>
+            <p className="text-muted tabular-nums text-center mb-3">
+              {tableName} — {money(total)} ({method})
+            </p>
+            <div className="flex gap-2 justify-center w-full">
+              <button className="btn-primary gap-2" onClick={() => window.print()}>
+                <Printer size={18} strokeWidth={1.75} />
+                Imprimir
+              </button>
+              <button className="btn-ghost" onClick={() => router.push("/mesas")}>
+                Volver
+              </button>
+            </div>
           </div>
-        </div>
+        </GlassEffect>
 
         <Ticket
           tableName={tableName}
@@ -243,11 +246,11 @@ export default function CuentaPage() {
           {shownProducts.map((p) => {
             const qty = items.find((it) => it.product_id === p.id)?.quantity || 0;
             return (
-              <button
+              <GlassEffect
                 key={p.id}
                 onClick={() => addProduct(p)}
-                className={`relative card overflow-hidden text-left transition-transform duration-150 ease-out active:scale-[0.97] ${
-                  qty > 0 ? "ring-2 ring-brand border-brand" : "hover:border-brand"
+                className={`text-left active:scale-[0.97] ${
+                  qty > 0 ? "ring-2 ring-accent border-accent" : "hover:border-accent"
                 }`}
               >
                 <div className="aspect-square bg-canvas flex items-center justify-center">
@@ -260,14 +263,14 @@ export default function CuentaPage() {
                 </div>
                 <div className="p-2">
                   <div className="font-semibold text-sm leading-tight truncate">{p.name}</div>
-                  <div className="text-brand-dark font-bold tabular-nums">{money(p.price)}</div>
+                  <div className="text-accent-dark font-bold tabular-nums">{money(p.price)}</div>
                 </div>
                 {qty > 0 && (
-                  <span className="absolute top-1 right-1 bg-brand text-ink text-xs font-bold rounded-full min-w-[1.6rem] h-6 px-1 flex items-center justify-center shadow-soft tabular-nums">
+                  <span className="absolute top-1 right-1 bg-accent text-ink text-xs font-bold rounded-full min-w-[1.6rem] h-6 px-1 flex items-center justify-center shadow-soft tabular-nums">
                     {qty}x
                   </span>
                 )}
-              </button>
+              </GlassEffect>
             );
           })}
           {shownProducts.length === 0 && (
@@ -277,7 +280,7 @@ export default function CuentaPage() {
       </div>
 
       {/* (8) Panel de escaneo siempre activo */}
-      <div className="lg:col-span-3 lg:col-start-1 lg:row-start-5 card p-3 flex items-center gap-3">
+      <GlassEffect className="lg:col-span-3 lg:col-start-1 lg:row-start-5 p-3 flex flex-row items-center gap-3">
         <span className="inline-flex w-9 h-9 rounded-lg bg-brand/15 items-center justify-center shrink-0">
           <ScanLine size={18} strokeWidth={1.75} className="text-brand-dark" />
         </span>
@@ -299,10 +302,10 @@ export default function CuentaPage() {
             </span>
           </div>
         </div>
-      </div>
+      </GlassEffect>
 
       {/* (4) Panel de cobro detallado */}
-      <div className="lg:col-span-2 lg:col-start-4 lg:row-span-4 lg:row-start-1 card p-4 flex flex-col lg:min-h-0">
+      <GlassEffect className="lg:col-span-2 lg:col-start-4 lg:row-span-4 lg:row-start-1 p-4 flex flex-col lg:min-h-0">
         <h2 className="font-display font-semibold text-lg shrink-0">Cuenta — {tableName}</h2>
 
         {!paying ? (
@@ -386,7 +389,7 @@ export default function CuentaPage() {
             )}
           </div>
         )}
-      </div>
+      </GlassEffect>
 
       {/* (5) Botón Cobrar / Confirmar */}
       <button
