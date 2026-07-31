@@ -38,7 +38,7 @@ export default function RootLayout({ children }) {
         <Gate>
           <div className="relative min-h-screen w-full flex flex-col">
             <div className="fixed inset-0 z-0 pointer-events-none">
-              <Particles quantity={200} className="h-full w-full" color="#D4AF37" />
+              <Particles quantity={200} className="h-full w-full" color="#1C1814" />
             </div>
             <div className="relative z-10 flex flex-col flex-1">
               <NavBar />
