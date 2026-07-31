@@ -82,8 +82,8 @@ export const GlassFilter = () => (
     >
       <feTurbulence
         type="fractalNoise"
-        baseFrequency="0.001 0.005"
-        numOctaves="1"
+        baseFrequency="0.005 0.01"
+        numOctaves="2"
         seed="17"
         result="turbulence"
       />
@@ -115,7 +115,7 @@ export const GlassFilter = () => (
       <feDisplacementMap
         in="SourceGraphic"
         in2="softMap"
-        scale="200"
+        scale="500"
         xChannelSelector="R"
         yChannelSelector="G"
       />

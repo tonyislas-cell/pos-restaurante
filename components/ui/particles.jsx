@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 export const Particles = ({
   className = "",
-  quantity = 1000, // Increased for denser effect
+  quantity = 2500, // Massive increase
   staticity = 25, // Lower for more parallax movement
   ease = 25, // Lower for faster response to mouse
   size = 1.5, // Slightly larger
