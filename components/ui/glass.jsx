@@ -12,7 +12,7 @@ export const GlassEffect = ({
   onClick,
 }) => {
   const glassStyle = {
-    boxShadow: "0 6px 6px rgba(0, 0, 0, 0.05), 0 0 20px rgba(0, 0, 0, 0.03)",
+    boxShadow: "0 24px 48px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04)", // Big floating drop shadows
     transitionTimingFunction: "cubic-bezier(0.175, 0.885, 0.32, 2.2)",
     ...style,
   };
@@ -35,15 +35,18 @@ export const GlassEffect = ({
       <div
         className="absolute inset-0 z-10 rounded-inherit pointer-events-none"
         style={{ 
-          background: "rgba(0, 0, 0, 0.04)", // Lower opacity (more transparent) and dark tint for contrast
-          border: "1px solid rgba(0, 0, 0, 0.08)" // Sharp edge for better contrast against background
+          background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.05) 100%)", // Frosty gradient
+          borderTop: "1.5px solid rgba(255, 255, 255, 0.8)",
+          borderLeft: "1.5px solid rgba(255, 255, 255, 0.4)",
+          borderRight: "1px solid rgba(255, 255, 255, 0.1)",
+          borderBottom: "1px solid rgba(0, 0, 0, 0.05)",
         }}
       />
       <div
         className="absolute inset-0 z-20 rounded-inherit rounded-3xl overflow-hidden pointer-events-none"
         style={{
           boxShadow:
-            "inset 1px 1px 2px 0 rgba(255, 255, 255, 0.7), inset -1px -1px 1px 1px rgba(255, 255, 255, 0.2)",
+            "inset 0 15px 15px -15px rgba(255, 255, 255, 0.8), inset 0 -15px 15px -15px rgba(0, 0, 0, 0.05)",
         }}
       />
 
