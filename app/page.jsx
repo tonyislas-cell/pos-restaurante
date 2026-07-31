@@ -48,8 +48,8 @@ export default function Home() {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Tile href="/mesas" icon={Armchair} title="Mesas" desc="Abrir cuentas y cobrar" />
-        <Tile href="/productos" icon={UtensilsCrossed} title="Artículos" desc="Añadir y editar el menú" />
-        <Tile href="/reportes" icon={BarChart3} title="Reportes" desc="Ventas del día y la semana" />
+        <Tile href="/admin/productos" icon={UtensilsCrossed} title="Artículos" desc="Añadir y editar el menú" />
+        <Tile href="/admin" icon={BarChart3} title="Reportes" desc="Ventas del día y la semana" />
       </div>
     </div>
   );
