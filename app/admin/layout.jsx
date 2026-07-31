@@ -3,9 +3,9 @@ import { LayoutDashboard, UtensilsCrossed, LogOut } from "lucide-react";
 
 export default function AdminLayout({ children }) {
   return (
-    <div className="min-h-screen bg-canvas text-ink flex flex-col md:flex-row">
+    <div className="min-h-screen text-ink flex flex-col md:flex-row bg-transparent">
       {/* Sidebar Admin */}
-      <aside className="w-full md:w-64 bg-surface border-r border-line/20 p-6 flex flex-col gap-8 shrink-0">
+      <aside className="w-full md:w-64 bg-surface/80 backdrop-blur-xl border-r border-line/20 p-6 flex flex-col gap-8 shrink-0">
         <div className="flex flex-col gap-2">
           <h2 className="font-display font-semibold text-2xl text-accent">Admin</h2>
           <p className="text-sm text-muted">Panel de Control</p>

@@ -2,6 +2,7 @@ import "./globals.css";
 import { Playfair_Display, Inter } from "next/font/google";
 import Gate from "@/components/Gate";
 import NavBar from "@/components/NavBar";
+import { Particles } from "@/components/ui/particles";
 
 // Playfair Display: voz de marca premium (títulos, logo).
 const playfair = Playfair_Display({
@@ -35,8 +36,15 @@ export default function RootLayout({ children }) {
     <html lang="es" className={`${playfair.variable} ${inter.variable}`}>
       <body>
         <Gate>
-          <NavBar />
-          <main className="max-w-6xl mx-auto p-4">{children}</main>
+          <div className="relative min-h-screen w-full flex flex-col">
+            <div className="fixed inset-0 z-0 pointer-events-none">
+              <Particles quantity={200} className="h-full w-full" color="#D4AF37" />
+            </div>
+            <div className="relative z-10 flex flex-col flex-1">
+              <NavBar />
+              <main className="max-w-6xl w-full mx-auto p-4 flex-1">{children}</main>
+            </div>
+          </div>
         </Gate>
       </body>
     </html>

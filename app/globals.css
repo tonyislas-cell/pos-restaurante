@@ -10,11 +10,11 @@
    clase/attr de tema, sin tocar componentes.
    ============================================================ */
 :root {
-  --color-canvas: 15 15 15; /* #0F0F0F dark gray/black background */
-  --color-surface: 25 25 25; /* #191919 elevated dark surface */
+  --color-canvas: 20 18 16; /* #141210 warm dark gray (softer than black) */
+  --color-surface: 30 28 26; /* #1e1c1a elevated dark surface */
   --color-ink: 245 245 245; /* #F5F5F5 light text */
-  --color-muted: 140 140 140; /* #8C8C8C gray text */
-  --color-line: 55 55 55; /* #373737 subtle borders */
+  --color-muted: 150 145 140; /* #96918C warm gray text */
+  --color-line: 60 55 50; /* #3C3732 subtle borders */
   --color-accent: 212 175 55; /* #D4AF37 premium gold */
   --color-accent-dark: 184 150 40; /* #B89628 darker gold for hover */
 }
