@@ -27,7 +27,7 @@ export const GlassEffect = ({
       <div
         className="absolute inset-0 z-0 overflow-hidden rounded-inherit rounded-3xl pointer-events-none"
         style={{
-          backdropFilter: "blur(5px)",
+          backdropFilter: "blur(1.5px)",
           filter: "url(#glass-distortion)",
           isolation: "isolate",
         }}
