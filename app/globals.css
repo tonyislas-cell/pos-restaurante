@@ -10,13 +10,13 @@
    clase/attr de tema, sin tocar componentes.
    ============================================================ */
 :root {
-  --color-canvas: 247 243 236; /* #F7F3EC lino cálido — fondo */
-  --color-surface: 255 253 249; /* #FFFDF9 marfil — cards */
-  --color-ink: 42 33 28; /* #2A211C espresso — texto principal (no negro puro) */
-  --color-muted: 138 127 114; /* #8A7F72 piedra cálida — texto secundario */
-  --color-line: 138 127 114; /* mismo tono, se usa con opacidad para bordes */
-  --color-accent: 176 141 87; /* #B08D57 bronce antiguo — acento único */
-  --color-accent-dark: 141 111 64; /* #8D6F40 bronce oscuro — hover y texto sobre claro */
+  --color-canvas: 15 15 15; /* #0F0F0F dark gray/black background */
+  --color-surface: 25 25 25; /* #191919 elevated dark surface */
+  --color-ink: 245 245 245; /* #F5F5F5 light text */
+  --color-muted: 140 140 140; /* #8C8C8C gray text */
+  --color-line: 55 55 55; /* #373737 subtle borders */
+  --color-accent: 212 175 55; /* #D4AF37 premium gold */
+  --color-accent-dark: 184 150 40; /* #B89628 darker gold for hover */
 }
 
 html,
@@ -62,7 +62,7 @@ body {
   }
 }
 .card {
-  @apply bg-surface rounded-2xl shadow-soft border border-line/20;
+  @apply bg-surface/80 backdrop-blur-xl rounded-2xl shadow-soft border border-line/20;
 }
 .input {
   @apply w-full rounded-xl border border-line/40 bg-surface px-3 py-2 text-ink

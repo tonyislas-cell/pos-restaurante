@@ -1,20 +1,18 @@
 import "./globals.css";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Playfair_Display, Inter } from "next/font/google";
 import Gate from "@/components/Gate";
 import NavBar from "@/components/NavBar";
 
-// Fraunces: voz de marca (nombre del local, títulos, ticket). Con carácter,
-// no un serif genérico de sistema.
-const fraunces = Fraunces({
+// Playfair Display: voz de marca premium (títulos, logo).
+const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-display",
   weight: ["500", "600", "700"],
   display: "swap",
 });
 
-// Plus Jakarta Sans: tipografía funcional para toda la UI operativa
-// (botones, productos, formularios, cifras). Cálida y muy legible.
-const jakarta = Plus_Jakarta_Sans({
+// Inter: tipografía funcional para legibilidad absoluta.
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   weight: ["400", "500", "600", "700"],
@@ -34,7 +32,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es" className={`${fraunces.variable} ${jakarta.variable}`}>
+    <html lang="es" className={`${playfair.variable} ${inter.variable}`}>
       <body>
         <Gate>
           <NavBar />

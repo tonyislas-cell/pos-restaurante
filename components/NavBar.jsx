@@ -7,17 +7,18 @@ import { ChefHat } from "lucide-react";
 const links = [
   { href: "/", label: "Inicio" },
   { href: "/mesas", label: "Mesas" },
-  { href: "/productos", label: "Artículos" },
-  { href: "/reportes", label: "Reportes" },
+  { href: "/admin", label: "Administración" },
 ];
 
 export default function NavBar() {
   const pathname = usePathname();
 
+  if (pathname.startsWith("/admin")) return null;
+
   return (
-    <header className="no-print bg-ink text-canvas shadow-soft">
+    <header className="no-print bg-surface/80 backdrop-blur-xl border-b border-line/20 sticky top-0 z-50">
       <nav className="max-w-6xl mx-auto flex items-center gap-1 px-3 h-14">
-        <span className="flex items-center gap-2 mr-3 font-display font-semibold tracking-tight text-canvas/95 shrink-0">
+        <span className="flex items-center gap-2 mr-3 font-display font-semibold tracking-tight text-ink shrink-0">
           <ChefHat size={20} strokeWidth={1.75} className="text-brand" />
           <span className="hidden sm:inline">POS</span>
         </span>
@@ -29,7 +30,7 @@ export default function NavBar() {
               key={l.href}
               href={l.href}
               className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                active ? "bg-brand text-ink" : "text-canvas/80 hover:bg-white/10"
+                active ? "bg-brand text-ink" : "text-muted hover:bg-canvas"
               }`}
             >
               {l.label}
