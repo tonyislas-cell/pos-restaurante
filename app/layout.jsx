@@ -3,6 +3,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import Gate from "@/components/Gate";
 import NavBar from "@/components/NavBar";
 import { Particles } from "@/components/ui/particles";
+import { GlassFilter } from "@/components/ui/glass";
 
 // Playfair Display: voz de marca premium (títulos, logo).
 const playfair = Playfair_Display({
@@ -36,6 +37,7 @@ export default function RootLayout({ children }) {
     <html lang="es" className={`${playfair.variable} ${inter.variable}`}>
       <body>
         <Gate>
+          <GlassFilter />
           <div className="relative min-h-screen w-full flex flex-col">
             <div className="fixed inset-0 z-0 pointer-events-none">
               <Particles quantity={200} className="h-full w-full" color="#1C1814" />

@@ -4,10 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 
 export const Particles = ({
   className = "",
-  quantity = 200, // Increased as requested
-  staticity = 50,
-  ease = 50,
-  size = 0.4,
+  quantity = 350, // Increased for denser effect
+  staticity = 25, // Lower for more parallax movement
+  ease = 25, // Lower for faster response to mouse
+  size = 0.5, // Slightly larger
   refresh = false,
   color = "#1C1814", // Dark espresso color to contrast the cream background
   vx = 0,

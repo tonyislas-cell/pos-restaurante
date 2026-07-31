@@ -67,8 +67,8 @@ function Stat({ label, value }) {
 function Tile({ href, icon: Icon, title, desc }) {
   return (
     <Link href={href} className="card p-6 hover:shadow-md transition-shadow block">
-      <span className="inline-flex w-11 h-11 rounded-xl bg-brand/15 items-center justify-center">
-        <Icon size={22} strokeWidth={1.75} className="text-brand-dark" />
+      <span className="inline-flex w-11 h-11 rounded-xl bg-accent/15 items-center justify-center">
+        <Icon size={22} strokeWidth={1.75} className="text-accent-dark" />
       </span>
       <h2 className="font-display font-semibold text-lg mt-3">{title}</h2>
       <p className="text-sm text-muted">{desc}</p>
