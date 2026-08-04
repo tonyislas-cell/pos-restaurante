@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { money } from "@/lib/format";
@@ -16,6 +16,13 @@ import {
   X as XIcon,
 } from "lucide-react";
 import { GlassEffect } from "@/components/ui/glass";
+import {
+  addOrderItem,
+  cancelOrder as cancelOrderRpc,
+  checkoutOrder,
+  setOrderItemQuantity,
+} from "@/lib/posApi";
+import { mergeOrderUpdate } from "@/lib/orderState";
 
 export default function CuentaPage() {
   const { id } = useParams();
@@ -27,94 +34,100 @@ export default function CuentaPage() {
   const [categories, setCategories] = useState([]);
   const [activeCat, setActiveCat] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+  const [busy, setBusy] = useState(false);
   const [scanFeedback, setScanFeedback] = useState(null); // { ok, text } | null
 
   // Cobro
   const [paying, setPaying] = useState(false);
   const [method, setMethod] = useState("efectivo");
   const [cash, setCash] = useState("");
-  const [done, setDone] = useState(false); // ya se cobró -> mostrar ticket
 
-  useEffect(() => {
-    loadAll();
-  }, [id]);
-
-  async function loadAll() {
-    const [{ data: ord }, { data: prods }, { data: cats }] = await Promise.all([
-      supabase.from("orders").select("*, dining_tables(name)").eq("id", id).single(),
-      supabase.from("products").select("*").eq("active", true).order("name"),
-      supabase.from("categories").select("*").order("sort_order"),
-    ]);
-    setOrder(ord);
-    setProducts(prods || []);
-    setCategories(cats || []);
-    await loadItems();
-    setLoading(false);
-  }
-
-  async function loadItems() {
-    const { data } = await supabase
+  const loadItems = useCallback(async () => {
+    const { data, error } = await supabase
       .from("order_items")
       .select("*")
       .eq("order_id", id)
       .order("created_at");
+    if (error) throw error;
     setItems(data || []);
     return data || [];
-  }
+  }, [id]);
 
-  const total = useMemo(
+  const loadAll = useCallback(async () => {
+    try {
+      setLoadError(null);
+      const [orderResult, productsResult, categoriesResult] = await Promise.all([
+        supabase.from("orders").select("*, dining_tables(name)").eq("id", id).single(),
+        supabase.from("products").select("*").eq("active", true).order("name"),
+        supabase.from("categories").select("*").order("sort_order"),
+      ]);
+      const firstError = orderResult.error || productsResult.error || categoriesResult.error;
+      if (firstError) throw firstError;
+      setOrder(orderResult.data);
+      setProducts(productsResult.data || []);
+      setCategories(categoriesResult.data || []);
+      await loadItems();
+    } catch (error) {
+      setLoadError(error.message || "No se pudo cargar la cuenta.");
+    } finally {
+      setLoading(false);
+    }
+  }, [id, loadItems]);
+
+  useEffect(() => {
+    loadAll();
+  }, [loadAll]);
+
+  const itemsTotal = useMemo(
     () => items.reduce((a, it) => a + Number(it.unit_price) * it.quantity, 0),
     [items]
   );
-
-  async function persistTotal(newTotal) {
-    await supabase.from("orders").update({ total: newTotal }).eq("id", id);
-  }
+  const total = order ? Number(order.total) : itemsTotal;
 
   // ---------- Añadir / quitar productos ----------
   async function addProduct(p) {
-    const existing = items.find((it) => it.product_id === p.id);
-    if (existing) {
-      await supabase
-        .from("order_items")
-        .update({ quantity: existing.quantity + 1 })
-        .eq("id", existing.id);
-    } else {
-      await supabase.from("order_items").insert({
-        order_id: id,
-        product_id: p.id,
-        product_name: p.name,
-        unit_price: p.price,
-        quantity: 1,
-      });
+    if (busy) return false;
+    setBusy(true);
+    try {
+      const nextOrder = await addOrderItem(id, p.id);
+      setOrder((current) => mergeOrderUpdate(current, nextOrder));
+      await loadItems();
+      return true;
+    } catch (error) {
+      alert(error.message);
+      return false;
+    } finally {
+      setBusy(false);
     }
-    const newItems = await loadItems();
-    await persistTotal(sum(newItems));
   }
 
   async function changeQty(item, delta) {
-    const q = item.quantity + delta;
-    if (q <= 0) {
-      await supabase.from("order_items").delete().eq("id", item.id);
-    } else {
-      await supabase.from("order_items").update({ quantity: q }).eq("id", item.id);
+    if (busy) return;
+    setBusy(true);
+    try {
+      const nextOrder = await setOrderItemQuantity(
+        item.id,
+        Math.max(0, item.quantity + delta)
+      );
+      setOrder((current) => mergeOrderUpdate(current, nextOrder));
+      await loadItems();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setBusy(false);
     }
-    const newItems = await loadItems();
-    await persistTotal(sum(newItems));
-  }
-
-  function sum(list) {
-    return list.reduce((a, it) => a + Number(it.unit_price) * it.quantity, 0);
   }
 
   // ---------- Escáner SIEMPRE ACTIVO ----------
   // Un lector USB "teclea" el código muy rápido y termina con Enter. Captamos
   // las pulsaciones a nivel de ventana, sin necesidad de hacer clic en un campo.
   const onScanRef = useRef(() => {});
-  onScanRef.current = (code) => {
+  onScanRef.current = async (code) => {
     const found = products.find((p) => p.barcode === code);
     if (found) {
-      addProduct(found);
+      const added = await addProduct(found);
+      if (!added) return;
       setScanFeedback({ ok: true, text: "Añadido: " + found.name });
     } else {
       setScanFeedback({ ok: false, text: "Código no encontrado: " + code });
@@ -149,40 +162,60 @@ export default function CuentaPage() {
   const change = method === "efectivo" ? Math.max(0, cashNum - total) : 0;
 
   async function confirmPayment() {
+    if (busy) return;
     if (items.length === 0) return alert("La cuenta está vacía.");
     if (method === "efectivo" && cashNum < total)
       return alert("El efectivo recibido es menor que el total.");
 
-    const { error } = await supabase
-      .from("orders")
-      .update({
-        status: "paid",
-        payment_method: method,
-        total,
-        cash_received: method === "efectivo" ? cashNum : null,
-        change_due: method === "efectivo" ? change : null,
-        closed_at: new Date().toISOString(),
-      })
-      .eq("id", id);
-    if (error) return alert("Error: " + error.message);
-
-    setPaying(false);
-    setDone(true);
+    setBusy(true);
+    try {
+      const paidOrder = await checkoutOrder({
+        orderId: id,
+        method,
+        cashReceived: cashNum,
+      });
+      setOrder((current) => mergeOrderUpdate(current, paidOrder));
+      setPaying(false);
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function cancelOrder() {
-    if (!confirm("¿Cancelar esta cuenta? Se borrará.")) return;
-    await supabase.from("orders").delete().eq("id", id); // items caen por cascade
-    router.push("/mesas");
+    if (busy || !confirm("¿Cancelar esta cuenta? Se conservará como registro.")) return;
+    setBusy(true);
+    try {
+      const cancelledOrder = await cancelOrderRpc(id);
+      setOrder((current) => mergeOrderUpdate(current, cancelledOrder));
+      router.push("/mesas");
+    } catch (error) {
+      alert(error.message);
+      setBusy(false);
+    }
   }
 
   if (loading) return <p className="text-muted">Cargando…</p>;
+  if (loadError) return <p className="text-red-600">{loadError}</p>;
   if (!order) return <p className="text-red-600">No se encontró la cuenta.</p>;
 
   const tableName = order.dining_tables?.name || "Cuenta";
 
+  if (order.status === "cancelled") {
+    return (
+      <GlassEffect className="p-6 max-w-lg mx-auto text-center space-y-3">
+        <h1 className="font-display font-semibold text-xl">Cuenta cancelada</h1>
+        <p className="text-muted">Esta cuenta se conserva como registro y ya no puede modificarse.</p>
+        <button className="btn-primary" onClick={() => router.push("/mesas")}>Volver a mesas</button>
+      </GlassEffect>
+    );
+  }
+
   // ---------- Vista de ticket (tras cobrar) ----------
-  if (done) {
+  if (order.status === "paid") {
+    const paidCash = Number(order.cash_received) || 0;
+    const paidChange = Number(order.change_due) || 0;
     return (
       <div className="space-y-4">
         <GlassEffect className="no-print p-6 space-y-3">
@@ -192,7 +225,7 @@ export default function CuentaPage() {
             </span>
             <p className="font-display font-semibold text-xl text-center">Cuenta cobrada</p>
             <p className="text-muted tabular-nums text-center mb-3">
-              {tableName} — {money(total)} ({method})
+              {tableName} — {money(total)} ({order.payment_method})
             </p>
             <div className="flex gap-2 justify-center w-full">
               <button className="btn-primary gap-2" onClick={() => window.print()}>
@@ -210,10 +243,10 @@ export default function CuentaPage() {
           tableName={tableName}
           items={items}
           total={total}
-          method={method}
-          cash={cashNum}
-          change={change}
-          date={new Date()}
+          method={order.payment_method}
+          cash={paidCash}
+          change={paidChange}
+          date={order.closed_at ? new Date(order.closed_at) : new Date()}
         />
       </div>
     );
@@ -249,6 +282,7 @@ export default function CuentaPage() {
               <GlassEffect
                 key={p.id}
                 onClick={() => addProduct(p)}
+                disabled={busy}
                 className={`text-left active:scale-[0.97] ${
                   qty > 0 ? "ring-2 ring-accent border-accent" : "hover:border-accent"
                 }`}
@@ -323,11 +357,11 @@ export default function CuentaPage() {
                     <div className="text-xs text-muted tabular-nums">{money(it.unit_price)} c/u</div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button className="btn-ghost !px-2 !py-1" onClick={() => changeQty(it, -1)}>
+                    <button disabled={busy} className="btn-ghost !px-2 !py-1" onClick={() => changeQty(it, -1)}>
                       <Minus size={14} strokeWidth={2} />
                     </button>
                     <span className="w-6 text-center font-semibold tabular-nums">{it.quantity}</span>
-                    <button className="btn-ghost !px-2 !py-1" onClick={() => changeQty(it, +1)}>
+                    <button disabled={busy} className="btn-ghost !px-2 !py-1" onClick={() => changeQty(it, +1)}>
                       <Plus size={14} strokeWidth={2} />
                     </button>
                   </div>
@@ -344,6 +378,7 @@ export default function CuentaPage() {
             </div>
             <button
               className="text-red-600 text-sm mt-2 self-start shrink-0"
+              disabled={busy}
               onClick={cancelOrder}
             >
               Cancelar cuenta
@@ -394,7 +429,7 @@ export default function CuentaPage() {
       {/* (5) Botón Cobrar / Confirmar */}
       <button
         className="btn-primary text-lg w-full lg:col-start-4 lg:row-start-5"
-        disabled={!paying && items.length === 0}
+        disabled={busy || (!paying && items.length === 0)}
         onClick={() => (paying ? confirmPayment() : setPaying(true))}
       >
         {paying ? "Confirmar cobro" : "Cobrar"}
@@ -403,6 +438,7 @@ export default function CuentaPage() {
       {/* (6) Botón Guardar y volver / Atrás */}
       <button
         className="btn-ghost text-lg w-full lg:col-start-5 lg:row-start-5"
+        disabled={busy}
         onClick={() => (paying ? setPaying(false) : router.push("/mesas"))}
       >
         {paying ? "Atrás" : "Guardar y volver"}

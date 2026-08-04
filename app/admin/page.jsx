@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { money } from "@/lib/format";
 import { GlassEffect } from "@/components/ui/glass";
@@ -18,11 +18,7 @@ export default function ReportesPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    load();
-  }, [mode, date]);
-
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     const base = new Date(date + "T00:00:00");
     let start, end;
@@ -50,7 +46,11 @@ export default function ReportesPage() {
 
     setOrders(data || []);
     setLoading(false);
-  }
+  }, [date, mode]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   // ----- Agregados -----
   const total = orders.reduce((a, o) => a + Number(o.total), 0);

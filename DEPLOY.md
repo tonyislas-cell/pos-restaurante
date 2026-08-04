@@ -1,50 +1,53 @@
-# Guía de publicación — POS Restaurante
+# Publicación segura en Vercel
 
-Esta guía te lleva de "la app funciona en mi computadora" a "está en internet con
-una dirección que puedo abrir en las tablets del restaurante".
+Esta guía presupone una sola computadora de caja y una URL pública de Vercel.
 
-> ⚠️ **Antes de publicar necesitas tener Supabase conectado y la app funcionando en
-> local.** Si aún no lo has hecho, primero sigue el `README.md` (crear proyecto en
-> Supabase, correr `supabase/schema.sql` y rellenar `.env.local`).
+## 1. Preparar Supabase
 
----
+> La instalación es destructiva para los datos del POS. Confirma que no necesitas los productos, ventas o imágenes actuales.
 
-## Valores de configuración que debes copiar en Vercel
+1. Vacía el bucket `product-images` desde Storage si contiene archivos anteriores.
+2. Ejecuta `supabase/schema.sql` completo en SQL Editor.
+3. Ejecuta `supabase/verify.sql` y confirma el resultado `VERIFY_OK`.
+4. En **Authentication → Users**, crea manualmente una cuenta de caja.
+5. Desactiva el registro de usuarios nuevos en la configuración de Authentication.
+6. Comprueba en una ventana privada que una consulta anónima no puede acceder a las tablas.
 
-Cuando conectes el proyecto en Vercel, ve a **Settings → Environment Variables** y
-añade estos tres (los valores están en tu archivo `.env.local`):
+## 2. Configurar Vercel
 
-| Nombre | Qué es |
+Define únicamente estas variables en **Settings → Environment Variables**:
+
+| Variable | Valor |
 |---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | La dirección de tu proyecto de Supabase |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | La clave pública de Supabase |
-| `NEXT_PUBLIC_POS_PASSWORD` | La contraseña con la que el personal entra al POS |
+| `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave pública/publishable del proyecto |
 
----
+Elimina `NEXT_PUBLIC_POS_PASSWORD` si existe. Nunca agregues una clave `service_role` a una variable `NEXT_PUBLIC_*`.
 
-## Pasos para publicar
+## 3. Verificar antes de publicar
 
-1. Sube el código a un repositorio en [github.com](https://github.com) (privado).
-2. Entra en [vercel.com](https://vercel.com) y regístrate con tu cuenta de GitHub.
-3. Haz clic en **Add New → Project** y selecciona el repositorio del POS.
-4. En **Framework Preset** debe aparecer **Next.js** (se detecta solo).
-5. Abre **Environment Variables** y añade las tres variables de la tabla de arriba.
-6. Haz clic en **Deploy**.
+```bash
+npm test
+npm run lint
+npm run build
+```
 
-En 2-3 minutos tendrás una dirección pública (https://...) lista para abrir en
-cualquier tablet del restaurante.
+Los tres comandos deben terminar sin errores.
 
----
+## 4. Recorrido posterior al despliegue
 
-## Cada vez que hagas un cambio
+1. Abrir la URL sin sesión: solo aparece el formulario de acceso.
+2. Probar una contraseña incorrecta: se muestra un mensaje neutral y no aparecen datos.
+3. Iniciar sesión y recargar: la sesión continúa activa.
+4. Crear/editar un producto y subir una imagen.
+5. Abrir una mesa, agregar artículos y comprobar el total.
+6. Intentar efectivo insuficiente: el cobro se rechaza y la cuenta sigue abierta.
+7. Cobrar en efectivo y validar cambio/ticket.
+8. Cobrar otra cuenta con tarjeta.
+9. Cancelar una cuenta y comprobar que no aparece en ingresos.
+10. Reabrir la URL de una cuenta pagada: solo muestra el ticket.
+11. Cerrar sesión: la aplicación vuelve al acceso y oculta los datos.
 
-Con GitHub conectado, Vercel vuelve a publicar solo cada vez que subes cambios al
-repositorio. No hay que hacer nada más.
+## 5. Operación diaria
 
----
-
-## Si algo falla
-
-Vuelve a Claude Code y di:
-"El deploy en Vercel ha fallado, el error es: [pega aquí el texto del error]"
-y lo resolvemos.
+Abre la URL de Vercel mediante el acceso directo de Chrome con `--kiosk-printing`. La sesión queda guardada en esa computadora hasta que se cierre explícitamente o Supabase la invalide.

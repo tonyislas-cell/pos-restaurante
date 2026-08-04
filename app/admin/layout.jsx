@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LayoutDashboard, UtensilsCrossed, LogOut } from "lucide-react";
+import { LayoutDashboard, UtensilsCrossed, ArrowLeft } from "lucide-react";
+import LogoutButton from "@/components/LogoutButton";
 
 export default function AdminLayout({ children }) {
   return (
@@ -24,9 +25,10 @@ export default function AdminLayout({ children }) {
 
         <div className="pt-4 border-t border-line/20">
           <Link href="/" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-canvas/50 transition-colors text-sm font-medium text-muted hover:text-ink">
-            <LogOut size={18} />
+            <ArrowLeft size={18} />
             Volver a Caja
           </Link>
+          <LogoutButton className="w-full px-3 py-2 mt-2" />
         </div>
       </aside>
 

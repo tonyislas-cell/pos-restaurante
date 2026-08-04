@@ -10,6 +10,7 @@ export const GlassEffect = ({
   href,
   target,
   onClick,
+  disabled = false,
 }) => {
   const glassStyle = {
     boxShadow: "0 24px 48px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04)", // Big floating drop shadows
@@ -19,9 +20,12 @@ export const GlassEffect = ({
 
   const content = (
     <div
-      className={`relative overflow-hidden transition-all duration-700 rounded-3xl ${className}`}
+      className={`relative overflow-hidden transition-all duration-700 rounded-3xl ${
+        disabled ? "pointer-events-none opacity-60" : ""
+      } ${className}`}
       style={glassStyle}
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
+      aria-disabled={disabled || undefined}
     >
       {/* Glass Layers */}
       <div
