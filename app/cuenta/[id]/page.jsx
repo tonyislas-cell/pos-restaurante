@@ -424,39 +424,42 @@ export default function CuentaPage() {
               </button>
             </div>
             {method === "efectivo" && (
-              <div className="space-y-2 mt-3">
-                <div className="flex justify-between items-end">
-                  <label className="text-sm text-muted">Efectivo recibido</label>
-                  <div className="flex gap-1">
-                    {[50, 100, 200, 500].map((amt) => (
-                      <button
-                        key={amt}
-                        onClick={() => setCash(String(amt))}
-                        className="btn-ghost !px-2 !py-1 text-xs"
-                      >
-                        ${amt}
-                      </button>
-                    ))}
-                    <button
-                      onClick={() => setCash(String(total))}
-                      className="btn-ghost !px-2 !py-1 text-xs"
-                    >
-                      Exacto
-                    </button>
+              <div className="mt-4 flex gap-4">
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <label className="text-sm text-muted mb-2 block">Efectivo recibido</label>
+                    <input
+                      className="input text-2xl tabular-nums h-14 w-full"
+                      type="number"
+                      step="0.01"
+                      value={cash}
+                      autoFocus
+                      onChange={(e) => setCash(e.target.value)}
+                      placeholder={String(total)}
+                    />
+                  </div>
+                  <div className="flex justify-between items-end text-xl mt-4 pt-4 border-t border-line/20">
+                    <span className="text-muted text-base">Cambio</span>
+                    <span className="font-bold tabular-nums text-green-600">{money(change)}</span>
                   </div>
                 </div>
-                <input
-                  className="input text-lg tabular-nums"
-                  type="number"
-                  step="0.01"
-                  value={cash}
-                  autoFocus
-                  onChange={(e) => setCash(e.target.value)}
-                  placeholder={String(total)}
-                />
-                <div className="flex justify-between text-lg">
-                  <span>Cambio</span>
-                  <span className="font-bold tabular-nums">{money(change)}</span>
+
+                <div className="w-24 shrink-0 grid grid-cols-1 gap-2">
+                  {[50, 100, 200, 500].map((amt) => (
+                    <button
+                      key={amt}
+                      onClick={() => setCash(String(amt))}
+                      className="bg-surface border border-line/40 hover:border-brand shadow-sm rounded-xl flex items-center justify-center font-bold text-lg py-3 transition-all active:scale-95 text-ink"
+                    >
+                      ${amt}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setCash(String(total))}
+                    className="bg-brand text-ink shadow-sm rounded-xl flex items-center justify-center font-bold text-sm py-3 transition-all active:scale-95"
+                  >
+                    Exacto
+                  </button>
                 </div>
               </div>
             )}
