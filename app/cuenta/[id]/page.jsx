@@ -136,6 +136,11 @@ export default function CuentaPage() {
     onScanRef.timer = setTimeout(() => setScanFeedback(null), 2500);
   };
 
+  const actionsRef = useRef({ paying, confirmPayment, setPaying, router, items });
+  useEffect(() => {
+    actionsRef.current = { paying, confirmPayment, setPaying, router, items };
+  }, [paying, confirmPayment, router, items]);
+
   useEffect(() => {
     let buffer = "";
     let lastTime = 0;
@@ -147,10 +152,24 @@ export default function CuentaPage() {
       lastTime = now;
 
       if (e.key === "Enter") {
-        if (!typing && buffer.length >= 3) onScanRef.current(buffer);
+        if (!typing && buffer.length >= 3) {
+          onScanRef.current(buffer);
+        } else if (!typing) {
+          const { paying, confirmPayment, setPaying, items } = actionsRef.current;
+          if (paying) confirmPayment();
+          else if (items.length > 0) setPaying(true);
+        }
         buffer = "";
         return;
       }
+      
+      if (e.key === "Escape") {
+        const { paying, setPaying, router } = actionsRef.current;
+        if (paying) setPaying(false);
+        else router.push("/mesas");
+        return;
+      }
+
       if (!typing && e.key.length === 1) buffer += e.key;
     }
     window.addEventListener("keydown", onKey);
@@ -406,7 +425,26 @@ export default function CuentaPage() {
             </div>
             {method === "efectivo" && (
               <div className="space-y-2 mt-3">
-                <label className="text-sm text-muted">Efectivo recibido</label>
+                <div className="flex justify-between items-end">
+                  <label className="text-sm text-muted">Efectivo recibido</label>
+                  <div className="flex gap-1">
+                    {[50, 100, 200, 500].map((amt) => (
+                      <button
+                        key={amt}
+                        onClick={() => setCash(String(amt))}
+                        className="btn-ghost !px-2 !py-1 text-xs"
+                      >
+                        ${amt}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => setCash(String(total))}
+                      className="btn-ghost !px-2 !py-1 text-xs"
+                    >
+                      Exacto
+                    </button>
+                  </div>
+                </div>
                 <input
                   className="input text-lg tabular-nums"
                   type="number"

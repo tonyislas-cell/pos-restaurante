@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { money } from "@/lib/format";
 import { GlassEffect } from "@/components/ui/glass";
+import CorteTicket from "@/components/CorteTicket";
+import { Printer } from "lucide-react";
 
 // Devuelve YYYY-MM-DD en horario local
 function toKey(d) {
@@ -54,6 +56,8 @@ export default function ReportesPage() {
 
   // ----- Agregados -----
   const total = orders.reduce((a, o) => a + Number(o.total), 0);
+  const totalCash = orders.filter(o => o.payment_method === 'efectivo').reduce((a, o) => a + Number(o.total), 0);
+  const totalCard = orders.filter(o => o.payment_method === 'tarjeta').reduce((a, o) => a + Number(o.total), 0);
   const ticketCount = orders.length;
 
   // Productos vendidos (global del rango)
@@ -95,12 +99,34 @@ export default function ReportesPage() {
       </GlassEffect>
 
       {/* Totales del rango */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 no-print">
         <GlassEffect className="p-5 flex flex-col justify-center">
-          <p className="text-sm text-muted">
-            {mode === "dia" ? "Ventas del día" : "Ventas de la semana"}
-          </p>
-          <p className="text-3xl font-bold mt-1 tabular-nums">{money(total)}</p>
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-sm text-muted">
+                {mode === "dia" ? "Ventas del día" : "Ventas de la semana"}
+              </p>
+              <p className="text-3xl font-bold mt-1 tabular-nums">{money(total)}</p>
+            </div>
+            {mode === "dia" && (
+              <button className="btn-primary gap-2" onClick={() => window.print()}>
+                <Printer size={18} strokeWidth={1.75} />
+                <span className="hidden sm:inline">Imprimir Corte</span>
+              </button>
+            )}
+          </div>
+          {mode === "dia" && (
+            <div className="mt-4 pt-4 border-t border-line/20 flex gap-6 text-sm">
+              <div>
+                <p className="text-muted">Efectivo en caja</p>
+                <p className="font-bold tabular-nums text-green-600">{money(totalCash)}</p>
+              </div>
+              <div>
+                <p className="text-muted">En tarjeta</p>
+                <p className="font-bold tabular-nums">{money(totalCard)}</p>
+              </div>
+            </div>
+          )}
         </GlassEffect>
         <GlassEffect className="p-5 flex flex-col justify-center">
           <p className="text-sm text-muted">Tickets cobrados</p>
@@ -108,7 +134,10 @@ export default function ReportesPage() {
         </GlassEffect>
       </div>
 
-      {loading ? (
+      <CorteTicket date={date} total={total} cash={totalCash} card={totalCard} ticketsCount={ticketCount} />
+
+      <div className="no-print">
+        {loading ? (
         <p className="text-muted">Cargando…</p>
       ) : mode === "dia" ? (
         <ProductTable title="Productos vendidos" rows={productTotals} />
@@ -141,6 +170,7 @@ export default function ReportesPage() {
           })}
         </div>
       )}
+      </div>
     </div>
   );
 }
