@@ -31,7 +31,7 @@ export const GlassEffect = ({
       <div
         className="absolute inset-0 z-0 overflow-hidden rounded-inherit rounded-3xl pointer-events-none"
         style={{
-          backdropFilter: "blur(1.5px)",
+          backdropFilter: "blur(16px)",
           filter: "url(#glass-distortion)",
           isolation: "isolate",
         }}
@@ -39,7 +39,7 @@ export const GlassEffect = ({
       <div
         className="absolute inset-0 z-10 rounded-inherit pointer-events-none"
         style={{ 
-          background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.05) 100%)", // Frosty gradient
+          background: "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)", // Frosty gradient
           borderTop: "1.5px solid rgba(255, 255, 255, 0.8)",
           borderLeft: "1.5px solid rgba(255, 255, 255, 0.4)",
           borderRight: "1px solid rgba(255, 255, 255, 0.1)",

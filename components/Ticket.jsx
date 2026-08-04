@@ -8,10 +8,10 @@ import { money } from "@/lib/format";
 // Datos del negocio: edita estas constantes con la información real.
 // ADDRESS y PHONE son opcionales — si los dejas como cadena vacía "",
 // esa línea simplemente no se imprime.
-const RESTAURANT_NAME = "Mi Restaurante";
-const ADDRESS = ""; // ej. "Av. Reforma 123, Col. Centro"
-const PHONE = ""; // ej. "555-123-4567"
-const FAREWELL_MESSAGE = "Gracias por su visita";
+const RESTAURANT_NAME = "El Tejaban";
+const ADDRESS = "Avenida Universidad 340, Villas la Merced, 27296 Torreón, Coah.";
+const PHONE = "871 751 1098";
+const FAREWELL_MESSAGE = "¡Gracias por su preferencia!";
 
 export default function Ticket({ tableName, items, total, method, cash, change, date }) {
   const d = date || new Date();

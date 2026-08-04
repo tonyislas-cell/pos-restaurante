@@ -21,7 +21,7 @@ export default function NavBar() {
       <nav className="max-w-6xl mx-auto flex items-center gap-1 px-3 h-14">
         <span className="flex items-center gap-2 mr-3 font-display font-semibold tracking-tight text-ink shrink-0">
           <ChefHat size={20} strokeWidth={1.75} className="text-brand" />
-          <span className="hidden sm:inline">POS</span>
+          <span className="hidden sm:inline">El Tejaban</span>
         </span>
         {links.map((l) => {
           const active =
