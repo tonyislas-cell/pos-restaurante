@@ -86,6 +86,9 @@ body {
    Al imprimir, ocultamos todo menos el ticket.
    ============================================================ */
 @media print {
+  @page {
+    margin: 0;
+  }
   body * {
     visibility: hidden;
   }
