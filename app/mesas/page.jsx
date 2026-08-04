@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { money } from "@/lib/format";
 import { ArrowLeft, User, Plus, X } from "lucide-react";
 import { GlassEffect } from "@/components/ui/glass";
+import { openOrder } from "@/lib/posApi";
 
 export default function MesasPage() {
   const router = useRouter();
@@ -17,14 +18,6 @@ export default function MesasPage() {
 
   useEffect(() => {
     load();
-
-    // Realtime: si otra tablet abre/cobra una mesa, refrescamos.
-    const channel = supabase
-      .channel("mesas")
-      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, load)
-      .subscribe();
-
-    return () => supabase.removeChannel(channel);
   }, []);
 
   async function load() {
@@ -46,16 +39,15 @@ export default function MesasPage() {
       router.push(`/cuenta/${existing.id}`);
       return;
     }
-    // Crear una cuenta nueva para esta mesa
     setBusy(true);
-    const { data, error } = await supabase
-      .from("orders")
-      .insert({ table_id: table.id, status: "open", total: 0 })
-      .select()
-      .single();
-    setBusy(false);
-    if (error) return alert("Error: " + error.message);
-    router.push(`/cuenta/${data.id}`);
+    try {
+      const nextOrder = await openOrder(table.id);
+      router.push(`/cuenta/${nextOrder.id}`);
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function addTable(e) {
@@ -93,6 +85,7 @@ export default function MesasPage() {
               <div key={t.id} className="relative">
                 <button
                   onClick={() => openTable(t)}
+                  disabled={busy}
                   className={`w-full h-28 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 font-semibold transition-transform duration-150 ease-out active:scale-[0.97] ${
                     occupied
                       ? "bg-brand text-ink border-brand"

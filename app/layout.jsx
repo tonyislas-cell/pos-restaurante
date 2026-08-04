@@ -1,6 +1,6 @@
 import "./globals.css";
 import { Playfair_Display, Inter } from "next/font/google";
-import Gate from "@/components/Gate";
+import AuthGate from "@/components/AuthGate";
 import NavBar from "@/components/NavBar";
 import { Particles } from "@/components/ui/particles";
 import { GlassFilter } from "@/components/ui/glass";
@@ -36,7 +36,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es" className={`${playfair.variable} ${inter.variable}`}>
       <body style={{ "--glass-filter": "url(#glass-distortion)" }}>
-        <Gate>
+        <AuthGate>
           <GlassFilter />
           <div className="relative min-h-screen w-full flex flex-col">
             <div className="fixed inset-0 z-0 pointer-events-none">
@@ -47,7 +47,7 @@ export default function RootLayout({ children }) {
               <main className="max-w-6xl w-full mx-auto p-4 flex-1">{children}</main>
             </div>
           </div>
-        </Gate>
+        </AuthGate>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChefHat } from "lucide-react";
+import LogoutButton from "@/components/LogoutButton";
 
 const links = [
   { href: "/", label: "Inicio" },
@@ -37,6 +38,7 @@ export default function NavBar() {
             </Link>
           );
         })}
+        <LogoutButton className="ml-auto px-2 py-2" />
       </nav>
     </header>
   );

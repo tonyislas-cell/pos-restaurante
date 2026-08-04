@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/exhaustive-deps -- Canvas callbacks intentionally restart only on explicit visual inputs. */
+
 import React, { useEffect, useRef, useState } from "react";
 
 export const Particles = ({
