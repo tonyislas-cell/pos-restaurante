@@ -10,8 +10,8 @@
    clase/attr de tema, sin tocar componentes.
    ============================================================ */
 :root {
-  --color-canvas: 236 231 222; /* Richer premium cream for contrast */
-  --color-surface: 255 255 255; /* #ffffff crisp white cards */
+  --color-canvas: 185 180 170; /* Dos tonos más oscuro, gris cálido */
+  --color-surface: 245 242 235; /* Blanco roto / crema claro para las tarjetas */
   --color-ink: 28 24 20; /* #1c1814 dark espresso text */
   --color-muted: 135 130 120; /* #878278 warm gray for muted text */
   --color-line: 235 230 220; /* #ebe6dc subtle warm borders */

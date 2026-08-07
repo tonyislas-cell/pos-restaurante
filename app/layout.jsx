@@ -2,6 +2,7 @@ import "./globals.css";
 import { Playfair_Display, Inter } from "next/font/google";
 import AuthGate from "@/components/AuthGate";
 import NavBar from "@/components/NavBar";
+import MainDock from "@/components/MainDock";
 import { Particles } from "@/components/ui/particles";
 import { GlassFilter } from "@/components/ui/glass";
 
@@ -42,10 +43,11 @@ export default function RootLayout({ children }) {
             <div className="fixed inset-0 z-0 pointer-events-none">
               <Particles quantity={200} className="h-full w-full" color="#1C1814" />
             </div>
-            <div className="relative z-10 flex flex-col flex-1">
+            <div className="relative z-10 flex flex-col flex-1 pb-24">
               <NavBar />
               <main className="max-w-6xl w-full mx-auto p-4 flex-1">{children}</main>
             </div>
+            <MainDock />
           </div>
         </AuthGate>
       </body>

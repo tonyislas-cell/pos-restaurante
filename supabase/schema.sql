@@ -7,12 +7,12 @@
 create extension if not exists pgcrypto;
 
 -- Elimina contratos anteriores antes de recrear los tipos compuestos.
-drop function if exists public.open_order(uuid);
-drop function if exists public.add_order_item(uuid, uuid);
-drop function if exists public.set_order_item_quantity(uuid, integer);
-drop function if exists public.checkout_order(uuid, text, numeric);
-drop function if exists public.cancel_order(uuid);
-drop function if exists public.set_updated_at();
+drop function if exists public.open_order(uuid) cascade;
+drop function if exists public.add_order_item(uuid, uuid) cascade;
+drop function if exists public.set_order_item_quantity(uuid, integer) cascade;
+drop function if exists public.checkout_order(uuid, text, numeric) cascade;
+drop function if exists public.cancel_order(uuid) cascade;
+drop function if exists public.set_updated_at() cascade;
 
 drop table if exists public.order_items cascade;
 drop table if exists public.orders cascade;
@@ -408,23 +408,76 @@ create policy product_images_delete on storage.objects
 -- ============================================================
 
 insert into public.categories (name, sort_order) values
-  ('Comida', 1), ('Bebida', 2), ('Postre', 3);
+  ('Comidas', 1),
+  ('Carnes a la Plancha', 2),
+  ('Flautas, Tacos y Pescado', 3),
+  ('Bebidas', 4),
+  ('Hamburguesas Clásicas', 5),
+  ('Hamburguesas de Especialidad', 6),
+  ('Otros Antojitos', 7),
+  ('Especiales de Carne', 8);
 
 insert into public.dining_tables (name, sort_order) values
   ('Mesa 1', 1), ('Mesa 2', 2), ('Mesa 3', 3), ('Mesa 4', 4),
   ('Barra', 5), ('Para llevar', 6);
 
-insert into public.products (name, price, category_id, barcode)
-select v.name, v.price, c.id, v.barcode
+insert into public.products (name, price, category_id, barcode, active)
+select v.name, v.price, c.id, v.barcode, v.active
 from (values
-  ('Hamburguesa', 120.00, 'Comida', '2000000000018'),
-  ('Tacos (orden)', 85.00, 'Comida', '2000000000025'),
-  ('Ensalada', 95.00, 'Comida', '2000000000032'),
-  ('Refresco', 30.00, 'Bebida', '2000000000049'),
-  ('Agua', 20.00, 'Bebida', '2000000000056'),
-  ('Café', 35.00, 'Bebida', '2000000000063'),
-  ('Pastel', 55.00, 'Postre', '2000000000070')
-) as v(name, price, category_name, barcode)
+  -- Comidas
+  ('Caldo de res', 110.00, 'Comidas', '2000000000100', true),
+  ('Caldo de pollo', 100.00, 'Comidas', '2000000000101', true),
+  ('Chile relleno', 75.00, 'Comidas', '2000000000102', true),
+  ('Mole', 85.00, 'Comidas', '2000000000103', true),
+  ('Asado', 85.00, 'Comidas', '2000000000104', true),
+  ('Guisado verde', 85.00, 'Comidas', '2000000000105', true),
+  ('Pechuga rellena', 90.00, 'Comidas', '2000000000106', true),
+  ('Fajitas de pollo', 80.00, 'Comidas', '2000000000107', true),
+  ('Carne c/ chile', 0.00, 'Comidas', '2000000000108', false),
+  ('Orden de enchiladas', 90.00, 'Comidas', '2000000000109', true),
+
+  -- Carnes a la Plancha
+  ('Chuleta ahumada', 100.00, 'Carnes a la Plancha', '2000000000110', true),
+  ('Milanesa', 100.00, 'Carnes a la Plancha', '2000000000111', true),
+
+  -- Flautas, Tacos y Pescado
+  ('Flautas sin sopa', 70.00, 'Flautas, Tacos y Pescado', '2000000000112', true),
+  ('Flautas con sopa', 85.00, 'Flautas, Tacos y Pescado', '2000000000113', true),
+  ('Taco de Bistek', 25.00, 'Flautas, Tacos y Pescado', '2000000000114', true),
+  ('Taco de Adobada', 25.00, 'Flautas, Tacos y Pescado', '2000000000115', true),
+  ('Filete de pescado', 120.00, 'Flautas, Tacos y Pescado', '2000000000116', true),
+
+  -- Bebidas
+  ('Refresco', 0.00, 'Bebidas', '2000000000117', true),
+  ('Agua del día', 30.00, 'Bebidas', '2000000000118', true),
+  ('Café', 25.00, 'Bebidas', '2000000000119', true),
+
+  -- Hamburguesas Clásicas
+  ('Ham. Jamón y Queso', 50.00, 'Hamburguesas Clásicas', '2000000000120', true),
+  ('Ham. Tocino, Jamón, Queso', 60.00, 'Hamburguesas Clásicas', '2000000000121', true),
+  ('Ham. Aguacate, Jamón, Queso', 60.00, 'Hamburguesas Clásicas', '2000000000122', true),
+
+  -- Hamburguesas de Especialidad
+  ('Ham. Hawaiana', 75.00, 'Hamburguesas de Especialidad', '2000000000123', true),
+  ('Ham. Súper Especial', 90.00, 'Hamburguesas de Especialidad', '2000000000124', true),
+  ('Ham. de Pollo', 75.00, 'Hamburguesas de Especialidad', '2000000000125', true),
+  ('Ham. Guerrera', 90.00, 'Hamburguesas de Especialidad', '2000000000126', true),
+  ('Ham. Especial', 75.00, 'Hamburguesas de Especialidad', '2000000000127', true),
+  ('Salchiburguer', 75.00, 'Hamburguesas de Especialidad', '2000000000128', true),
+  ('Ham. Suprema', 90.00, 'Hamburguesas de Especialidad', '2000000000129', true),
+
+  -- Otros Antojitos
+  ('Hot-Dog', 25.00, 'Otros Antojitos', '2000000000130', true),
+  ('Gordita', 20.00, 'Otros Antojitos', '2000000000131', true),
+  ('Burrito', 25.00, 'Otros Antojitos', '2000000000132', true),
+  ('Mollete', 50.00, 'Otros Antojitos', '2000000000133', true),
+  ('Lonche de Adobada', 85.00, 'Otros Antojitos', '2000000000134', true),
+  ('Lonche de Carnitas', 85.00, 'Otros Antojitos', '2000000000135', true),
+  ('Lonche Mixto', 85.00, 'Otros Antojitos', '2000000000136', true),
+
+  -- Especiales de Carne
+  ('Carne Asada / Fajitas Sirloin', 160.00, 'Especiales de Carne', '2000000000137', true)
+) as v(name, price, category_name, barcode, active)
 join public.categories c on c.name = v.category_name;
 
 comment on table public.orders is
